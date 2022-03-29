@@ -8,18 +8,17 @@ $smtp = Net::SMTP->new("aspmx.l.google.com",
 
 my $filename = $ARGV[0];
 my $results = $ARGV[1];
-#open my $out_fd, '>', $results or die $!; # create/open file for writing
-#print $out_fd "test";
 open my $fd, '<', $filename or die $!; # open the file using lexically scoped filehandle
 while( my $email = <$fd>) {
-	print "[*] Checking: ", $email, "\n";
+	print "\n[*] Checking: ", $email, "\n";
 	$smtp->mail(''); # MAIL FROM:
 	$smtp->recipient($email); # RCPT TO:
 	print "Code returned is: ", $smtp->code(), "\n";
+	open my $out_fd, '>>', $results or die $!; # create/open file for writing
 	if( $smtp->code() == '250' ) {
 		# valid email
 		print "Email is valid\n";
-		open my $out_fd, '>>', $results or die $!; # create/open file for writing
+		#open my $out_fd, '>>', $results or die $!; # create/open file for writing
 		print $out_fd $email; # write email to file
 	} elsif( $smtp->code() == '550' ) {
 		# email is invalid
@@ -28,10 +27,13 @@ while( my $email = <$fd>) {
 		# something else happened
 		print "SMTP code is ", $smtp->code, "\n";
 	}
-	print "Sleeping\n";
-	sleep(5);
+	if( eof($fd) ) {
+		print "End of file\n";
+		close $out_fd;
+	} else {
+		print "Sleeping\n";
+		sleep(5);
+	}	
 }
 
-close $out_fd;
 close $fd;
-
