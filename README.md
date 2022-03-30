@@ -1,4 +1,4 @@
-# perl
+# perl: email_verify.pl 
 Just a perl script that connects to google smtp and checks if the email might be valid or not. This was pretty simple and you can use telnet to verify as well. I just wanted to check a list of emails. 
 
 A good article is here: https://faun.pub/verify-email-existence-via-command-line-e5cbee779d26
